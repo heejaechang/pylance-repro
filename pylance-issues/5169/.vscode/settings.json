@@ -1,0 +1,7 @@
+{
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.exclude": [
+        "test_packages"
+    ],
+    "python.analysis.typeCheckingMode": "basic"
+}

@@ -1,0 +1,1 @@
+value = 'mailbox-shadow'
