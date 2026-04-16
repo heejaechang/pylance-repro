@@ -3,6 +3,7 @@
 # TRIGGER: trigger completion between the quotes
 # EXPECT: completion rows would show the key and its associated value type information
 # VERIFY: if rows still show only key names, the enhancement remains unimplemented
+# RECOVER: no recovery needed
 
 from typing import TypedDict
 

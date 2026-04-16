@@ -1,3 +1,10 @@
+ # SCENARIO: completion ranking should keep the closest `function1...` matches near the top
+ # TARGET: the trailing `f` on the final line
+ # TRIGGER: trigger completion at the cursor after `f`
+ # EXPECT: the `function1...` candidates stay grouped near the top of the list
+ # VERIFY: if lower-similarity results outrank the closer `function1...` matches, the bug still reproduces
+ # RECOVER: no recovery needed
+
 def function1():
     pass
 

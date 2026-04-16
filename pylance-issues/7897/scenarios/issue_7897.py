@@ -3,5 +3,6 @@
 # TRIGGER: type `"""` after the `f`
 # EXPECT: the editor auto-inserts the closing triple quotes
 # VERIFY: if the line remains `value = f"""` without a closing pair, the bug still reproduces
+# RECOVER: no recovery needed
 
 value = f

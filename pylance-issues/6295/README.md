@@ -1,5 +1,14 @@
 # Issue 6295
 
+## Contract
+
+- SCENARIO: Pylance's bundled `get_pytest_options.py` helper should fail gracefully when `pytest` is missing
+- TARGET: the bundled helper script referenced below, run with the selected local interpreter
+- TRIGGER: run the helper with an interpreter that does not have `pytest` installed
+- EXPECT: the failure is handled cleanly without an unhandled Python exception report from the host
+- VERIFY: if the host reports an unhandled exception for `get_pytest_options.py`, the bug still reproduces
+- RECOVER: install `pytest` or recreate the venv before rerunning
+
 This workspace reproduces the `get_pytest_options.py` crash path when the selected interpreter does not have `pytest` installed.
 
 ## Python version

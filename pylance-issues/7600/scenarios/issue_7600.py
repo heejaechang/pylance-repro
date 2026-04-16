@@ -3,6 +3,7 @@
 # TRIGGER: hover over `g`
 # EXPECT: the hover includes `Docstring for f`
 # VERIFY: the overloaded decorated alias keeps the docstring through the hover provider
+# RECOVER: no recovery needed
 
 from typing import Callable, ParamSpec, TypeVar, overload
 

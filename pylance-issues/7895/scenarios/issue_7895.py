@@ -3,6 +3,7 @@
 # TRIGGER: trigger completion at the end of `upd` and accept the top suggestion
 # EXPECT: the top suggestion resolves to the local parameter `update_trees`
 # VERIFY: if accepting the top suggestion inserts `self.update_trees`, the bug still reproduces
+# RECOVER: no recovery needed
 
 
 class SomeClass:
