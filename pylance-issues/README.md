@@ -11,8 +11,8 @@ Open the folder for an issue and follow that folder's README to rerun the scenar
 
 ## Current Set
 
-- Issue folders: 111
-- Standard issue folders: 110
+- Issue folders: 112
+- Standard issue folders: 111
 - Draft folders: `7554-draft`
 - Issues without folders yet: `4970`, `5737`, `6086`
 
