@@ -1,20 +1,47 @@
-# Issue 7428
+# Issue #7428 – reportCallIssue: False error message
 
-This workspace reproduces the false `reportCallIssue` diagnostics on `langchain-openai==0.3.28` constructor aliases.
+**Source**: https://github.com/microsoft/pylance-release/issues/7428
 
-## Python version
+## Problem
 
-This repro was revalidated on Python `3.12.13` with a local `.venv` interpreter in this folder.
+When using `langchain-openai` classes (`AzureChatOpenAI`, `AzureOpenAIEmbeddings`) that inherit from Pydantic `BaseModel`, Pylance reports false "No parameter named" errors for fields like `openai_api_key` and `openai_api_version` that have `alias` set via `Field(alias="api_key")`. Pydantic accepts both the original name and the alias when `populate_by_name=True`, but Pylance only recognizes the alias.
 
 ## Setup
 
-1. Create a Python `3.12` virtual environment in this folder.
-2. Install the packages from `requirements.txt` into that environment.
-3. Open this folder in VS Code and select the local `.venv` interpreter.
-4. Open `scenarios/issue_7428.py` and wait for diagnostics to settle.
+```bash
+pip install -r requirements.txt
+```
 
-The workspace already sets `python.analysis.typeCheckingMode` to `basic` and `python.analysis.diagnosticMode` to `workspace`.
+## Repro Steps (verbatim from issue)
 
-## Expected result
+1. Open `repro.py` in VS Code with Pylance
+2. Observe diagnostics on `openai_api_version` and `openai_api_key` parameters
 
-Pylance reports false `No parameter named "openai_api_version"` and `No parameter named "openai_api_key"` diagnostics on the `AzureChatOpenAI` and `AzureOpenAIEmbeddings` constructor calls.
+## Expected behavior (from user)
+
+No error reported — Pydantic's `Field(alias="api_key")` with `populate_by_name=True` allows both the original field name and the alias as constructor parameters.
+
+## Actual behavior (from user)
+
+Pylance reports:
+- `No parameter named "openai_api_version"` 
+- `No parameter named "openai_api_key"`
+
+## Verification Checklist
+
+- [ ] `repro.py` shows `reportCallIssue` diagnostics on `openai_api_version` parameter
+- [ ] `repro.py` shows `reportCallIssue` diagnostics on `openai_api_key` parameter
+- [ ] Using the alias names (`api_version`, `api_key`) does NOT show diagnostics
+
+## Supporting files
+
+- `requirements.txt` — declares `langchain-openai==0.3.28` and `httpx==0.28.1` (packages the reporter uses)
+- `.vscode/settings.json` — sets `typeCheckingMode: basic` per revalidation details
+
+## Root cause
+
+In `packages/pyright/packages/pyright-internal/src/analyzer/dataClasses.ts` line 636:
+```ts
+const effectiveName = entry.alias || entry.name;
+```
+When a `dataclass_transform` field has an alias, the alias completely replaces the field name in the synthesized `__init__`. Pydantic's `populate_by_name=True` config option (which allows BOTH original name and alias) is not supported by PEP 681 / dataclass_transform.
