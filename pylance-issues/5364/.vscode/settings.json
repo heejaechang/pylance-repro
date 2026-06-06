@@ -1,0 +1,3 @@
+{
+    "python.analysis.extraPaths": ["external/rules_python~~pip~pip_310_*/site-packages"]
+}

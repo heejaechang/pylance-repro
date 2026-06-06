@@ -1,0 +1,3 @@
+import mypkg
+
+mypkg.hello()
