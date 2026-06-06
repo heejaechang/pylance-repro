@@ -1,26 +1,52 @@
-# Issue 5125
+# Repro workspace — pylance-release issue #5125
 
-This workspace reproduces the missing `Extract Method` refactoring when the selected block starts or ends with a comment line.
+**Issue:** Refactoring is not possible if marked block starts with a comment
+https://github.com/microsoft/pylance-release/issues/5125
 
-## Setup
+Pure Python, single-file contract. No third-party packages or environment-specific
+setup are required — the bug is purely in Extract Method/Variable selection→node
+resolution. Open `scenarios/issue_5125.py` in VS Code with Pylance active.
 
-No third-party packages are required for this repro.
+## Issue body (verbatim minimal example, andreas-wolf)
 
-1. Open this folder in VS Code with Pylance active.
-2. Open `scenarios/issue_5125.py`.
+```Python
+def test():
+    a = 5
+    b = 6
+    # mark this and the next line, choose refactor -> nothing
+    c = a * b
+    return a + b, c
+```
 
-## Repro steps
+> If you want to refactor out the line `c = a * b` and also select the comment, you
+> don't get the option to extract as method. I would expect to get a new method with
+> the comment as first line.
 
-1. In `leading_comment_case`, select the marked comment line and the next line `c = a * b`.
-2. Invoke `Refactor...` from the context menu or Command Palette.
-3. Observe that `Extract Method` is missing.
-4. In `control_case`, select the two plain statements `c = a * b` and `d = a + b`.
-5. Invoke `Refactor...` again and observe that `Extract Method` is available.
-6. In `trailing_comment_case`, select `c = a * b` and the marked trailing comment line.
-7. Invoke `Refactor...` and observe that `Extract Method` is missing there as well.
+Follow-up clarification (@zakv):
 
-## Expected result
+> I'll add that this issue occurs whenever the comment is the first *or last* line of
+> the highlighted code.
 
-The still-repro behavior is that comment-edge selections do not surface `Extract Method`, even though the equivalent no-comment control selection does.
+## Expected vs. Actual (verbatim)
 
-The issue thread also includes a maintainer repro confirmation, and the current sweep kept this workspace focused on the minimal pure-Python one-file contract.
+- **Expected:** "Marked code blocks can be refactored/extracted into a new method, even
+  if the first selected line is a comment line."
+- **Actual:** "The option to extract the method is missing"
+
+## Verification checklist (every step, in order)
+
+1. Open `scenarios/issue_5125.py`.
+2. **Leading comment (issue body):** In `test()` / `leading_comment_case()`, select the
+   marked comment line **and** the following `c = a * b` line, then invoke `Refactor...`.
+   - Current bits: `Extract Method` **now appears** (leading-comment case fixed by pyrx #8418).
+3. **Control:** In `control_case()`, select only the two plain statements (`c = a * b`
+   plus context) and invoke `Refactor...`. `Extract Method` appears.
+4. **Trailing comment (still broken — @zakv "first *or last* line"):** In
+   `trailing_comment_case()`, select `c = a * b` **plus** the following trailing
+   comment line as the **last** selected line, then invoke `Refactor...`.
+   - Current bits: `Extract Method` is **missing** → reproduces the remaining bug.
+
+## Status summary
+
+- Leading-comment edge: FIXED (pyrx #8418, addresses duplicate #4586).
+- Trailing-comment-on-its-own-line edge: STILL REPRODUCES on current bits.
