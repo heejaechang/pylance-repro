@@ -1,0 +1,10 @@
+{
+    "editor.formatOnType": true,
+    "[python]": {
+        "editor.formatOnType": true,
+        "editor.defaultFormatter": "ms-python.vscode-pylance"
+    },
+    "editor.detectIndentation": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+}
