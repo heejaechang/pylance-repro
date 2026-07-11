@@ -1,0 +1,5 @@
+{
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.indexing": true,
+    "python.analysis.typeCheckingMode": "strict"
+}

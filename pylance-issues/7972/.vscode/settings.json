@@ -1,0 +1,6 @@
+{
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "editor.inlayHints.enabled": "on",
+    "editor.inlayHints.maximumLength": 0
+}

@@ -1,0 +1,7 @@
+{
+  "editor.formatOnType": true,
+  "[python]": {
+    "editor.formatOnType": true
+  },
+  "files.trimTrailingWhitespace": false
+}

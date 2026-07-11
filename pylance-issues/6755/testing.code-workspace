@@ -1,0 +1,12 @@
+{
+    "folders": [
+        {
+            "path": "dir1"
+        },
+        {
+            "path": ".",
+            "name": "root"
+        }
+    ],
+    "settings": {}
+}

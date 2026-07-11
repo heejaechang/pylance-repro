@@ -1,0 +1,8 @@
+{
+    "reportShadowedImports": "warning",
+    "executionEnvironments": [
+        {
+            "root": "./src"
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportUndefinedVariable": "error"
+    },
+    "python.analysis.aiCodeActions": {
+        "generateSymbol": true
+    }
+}

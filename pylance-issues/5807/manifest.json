@@ -1,0 +1,15 @@
+{
+  "issueUrl": "https://github.com/microsoft/pylance-release/issues/5807",
+  "issueNumber": 5807,
+  "title": "Symlinking a directory does not cause a reresolve of imports",
+  "classification": "bug",
+  "subsystem": "file-watcher / import-resolver",
+  "reproShape": "filesystem-watcher-event",
+  "rootCauseFile": "packages/pyright/packages/pyright-internal/src/analyzer/service.ts",
+  "rootCauseFunction": "_shouldHandleSourceFileWatchChanges",
+  "rootCauseDescription": "Folder watch event for a newly-symlinked directory is dropped because the gating conditions (parent has __init__ OR program already contains sources in path) both fail for a brand-new directory appearing via symlink.",
+  "verifierNotes": "This is a file-watcher integration issue. Cannot be fully validated with pylanceLanguageInfo alone. Requires either a real VS Code workspace (pylancePlaywright) or the Jest service-layer test preserved from the prior investigation. The prior investigation probe at packages/pyright/packages/pyright-internal/src/tests/.generated/issue5807.symlinkWatcher.test.ts confirmed the behavior at the service layer.",
+  "priorInvestigationDate": "2026-05-04",
+  "priorInvestigationVerdict": "reproduced",
+  "scenarioEntryFile": "scenarios/issue_5807_symlink_reresolve.py"
+}

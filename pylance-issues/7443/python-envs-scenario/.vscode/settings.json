@@ -1,0 +1,11 @@
+{
+    "python.useEnvironmentsExtension": true,
+    "python-envs.pythonProjects": [
+        {
+            "path": "nested",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        }
+    ],
+    "python.analysis.typeCheckingMode": "basic"
+}
