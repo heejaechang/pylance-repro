@@ -1,0 +1,4 @@
+{
+    "python.analysis.diagnosticsSource": "Pylance + Pyrefly",
+    "python.analysis.typeCheckingMode": "basic"
+}
