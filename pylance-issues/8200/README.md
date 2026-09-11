@@ -1,11 +1,8 @@
 # Django reverse relations in nested applications
 
-These candidate failures are tracked separately at
-https://github.com/microsoft/pylance-release/issues/8200.
-Use the [canonical follow-up workspace](https://github.com/heejaechang/pylance-repro/tree/main/pylance-issues/8200).
-This snapshot is retained so existing links continue to work.
+Issue: https://github.com/microsoft/pylance-release/issues/8200
 
-Public report and source of the model example:
+Related original report and source of the model example:
 https://github.com/microsoft/pylance-release/issues/8191
 
 An existing public workspace for the original report is also available:
