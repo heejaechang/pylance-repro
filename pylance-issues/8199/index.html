@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Brython diagnostics example</title>
+</head>
+<body>
+    <script type="text/python">
+from browser import document, html
+
+button = html.BUTTON("Hello")
+
+# CHECK: bundled Brython types provide button.bind
+button.bind
+
+# CHECK: a plain object cannot be inserted into the document
+document <= object()
+    </script>
+</body>
+</html>

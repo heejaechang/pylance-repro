@@ -1,0 +1,4 @@
+{
+    "python.analysis.supportHtmlEmbeddedPython": true,
+    "python.analysis.typeCheckingMode": "basic"
+}

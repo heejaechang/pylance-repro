@@ -107,3 +107,15 @@ python scenarios/issue_8191.py
 
 It prints the reverse accessor name and verifies that `Group` has a
 `networks` descriptor.
+
+## Candidate reproduction with complete expressions
+
+The self-contained [complete-expressions](complete-expressions) workspace
+records the same reverse-relation diagnostic and three related completion
+failures on the Pylance 2026.3.103 candidate, with VS Code 1.137.0,
+Python 3.14.4, Django 5.1.15, and Windows 11.
+
+Open that subdirectory itself as the VS Code workspace and follow its
+**Reproduction steps**. Its model files remain syntactically complete;
+downstream member expressions live in a separate file. Its README records
+the observed behavior, environment, and build-availability limitation.
