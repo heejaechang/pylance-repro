@@ -1,0 +1,6 @@
+{
+  "python.analysis.fixAll": [
+    "addTypeAnnotation"
+  ],
+  "python.analysis.inlayHints.variableTypes": true
+}
