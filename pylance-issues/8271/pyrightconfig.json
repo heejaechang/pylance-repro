@@ -1,0 +1,16 @@
+{
+    "executionEnvironments": [
+        {
+            "root": "./src"
+        },
+        {
+            "root": "./tests",
+            "extraPaths": [
+                "./src"
+            ]
+        }
+    ],
+    "reportShadowedImports": "information",
+    "reportMissingTypeStubs": "information",
+    "typeCheckingMode": "basic"
+}

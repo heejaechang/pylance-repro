@@ -1,0 +1,7 @@
+pytest
+zope.event
+numpy
+requests
+ipykernel
+pandas
+lxml

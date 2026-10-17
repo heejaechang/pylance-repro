@@ -1,0 +1,21 @@
+{
+  "python.analysis.enablePytestSupport": true,
+  "python.analysis.enablePytestExtra": true,
+  "python.analysis.inlayHints.pytestParameters": true,
+  "python.analysis.inlayHints.callArgumentNames": "all",
+  "python.analysis.inlayHints.functionReturnTypes": true,
+  "python.analysis.inlayHints.variableTypes": true,
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.indexing": true,
+  "python.analysis.importFormat": "absolute",
+  "python.analysis.extraPaths": [
+    "."
+  ],
+  "python.analysis.aiCodeActions": {
+    "generateSymbol": true
+  },
+  "python.analysis.fixAll": [
+    "source.unusedImports",
+    "source.convertImportFormat"
+  ]
+}
