@@ -1,0 +1,10 @@
+{
+    "executionEnvironments": [
+        {
+            "root": "."
+        }
+    ],
+    "reportShadowedImports": "information",
+    "reportMissingTypeStubs": "information",
+    "typeCheckingMode": "basic"
+}
