@@ -1,0 +1,64 @@
+{
+  "issueUrl": "https://github.com/microsoft/pylance-release/issues/8259",
+  "issueCreatedAt": "2026-10-09T17:14:20Z",
+  "publicRepository": "https://github.com/Extrality/AirfRANS",
+  "revision": "6acde648d5a9d81a3a90366abb6c04b7b02fe2a8",
+  "revisionSelection": "Public default-branch HEAD, committed 2023-06-06; reporter revision unknown",
+  "files": [
+    {
+      "path": "dataset.py",
+      "url": "https://raw.githubusercontent.com/Extrality/AirfRANS/6acde648d5a9d81a3a90366abb6c04b7b02fe2a8/dataset.py",
+      "gitBlob": "c36a1cf7ea61efe7af2b98c7904c378017428209",
+      "sha256": "6f3c42dae4421f20ac6f278836733a0ee5c7504e4c3e1e990c6e9ca8f892e045",
+      "bytes": 16356
+    },
+    {
+      "path": "reorganize.py",
+      "url": "https://raw.githubusercontent.com/Extrality/AirfRANS/6acde648d5a9d81a3a90366abb6c04b7b02fe2a8/reorganize.py",
+      "gitBlob": "d09902851bccb5818a03038e9f3d76bfe03bc436",
+      "sha256": "6cdd18acb5370b907e2a18d9eda7f7bc0bd85cce9316167000d888f30dc36605",
+      "bytes": 442
+    },
+    {
+      "path": "LICENSE-AirfRANS.txt",
+      "url": "https://raw.githubusercontent.com/Extrality/AirfRANS/6acde648d5a9d81a3a90366abb6c04b7b02fe2a8/LICENSE",
+      "gitBlob": "c734a1dd88c57fd0f8c0256c541b8051cd8a185a",
+      "sha256": "05ba154a27eeb81940385d278f8b7cd6f37729df050a3a9803113f686fbd40d4",
+      "bytes": 25275
+    },
+    {
+      "path": "references/AirfRANS-README.md",
+      "url": "https://raw.githubusercontent.com/Extrality/AirfRANS/6acde648d5a9d81a3a90366abb6c04b7b02fe2a8/README.md",
+      "gitBlob": "7ec5f3c5981244adffdbfee817dc3db3beaeb05f",
+      "sha256": "7cbad95ea3aa3788f7ead8577c867821736a7d786b6a4538d5522e682c01c0ac",
+      "bytes": 3220
+    }
+  ],
+  "reduction": {
+    "path": "scenarios/issue_8259.py",
+    "helperSourceLines": [
+      52,
+      71
+    ],
+    "assignmentSourceLines": [
+      141,
+      147,
+      148,
+      149
+    ],
+    "sha256": "821943fea14ca3d0f98f3e1a3ef4b214f79654a83796ef5f35127272790e62bb",
+    "failurePreservationProven": false
+  },
+  "candidateEnvironment": {
+    "python": "3.12",
+    "dependencySelection": "Latest non-yanked stable PyPI releases available at issue creation; not reporter versions",
+    "directDependencies": {
+      "numpy": "2.5.3",
+      "pyvista": "0.49.0",
+      "torch": "2.14.1",
+      "torch-geometric": "2.8.0",
+      "tqdm": "4.70.1"
+    }
+  },
+  "uiVerificationRun": false
+}
