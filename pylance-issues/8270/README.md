@@ -1,59 +1,134 @@
-Issue: https://github.com/microsoft/pylance-release/issues/8270
+# Pytest fixture support: Unknown member hover, missing signature help and definition, and skipped pytester annotations
 
-## Saved failed scenarios
-- hover close provides fixture method tooltip
-- genitems signature help popup
-- go to definition on doctest_namespace.clear
-- pytester type annotation code action adds correct imports
+- Issue: https://github.com/microsoft/pylance-release/issues/8270
+- Public reporter workspace: https://github.com/heejaechang/pylance-repro/tree/main/pylance-issues/8270
+- Pinned reporter artifact: https://github.com/heejaechang/pylance-repro/tree/8a23f80c33561a9ba226b01d779c7d463ed04c1e/pylance-issues/8270
+- Issue created: 2026-10-17.
+- Issue state and labels read on 2026-10-28: open; `fixed in next version (main)`.
+
+The report records four editor failures with inferred pytest fixture types:
+Unknown hover on `capfdbinary.close`, no signature help on `pytester.genitems()`,
+no definition for `doctest_namespace.clear()`, and omitted pytester annotations
+and import after the file-wide fixture annotation action. These are concrete
+checks worth verifying; their product attribution is not established by this
+workspace preparation.
+
+## Files and provenance
+
+- `tests/pytest_test.py`: authoritative entry file, retaining the complete
+  public scenario, comments, unannotated parameters, and unfinished expression.
+- `tests/conftest.py`: public `Fruit`/`FruitSalad`, `fruit_bowl`, and `sample_bowl`
+  definitions. No optional pytester plugin is activated.
+- `tests/__init__.py`: empty, as supplied.
+- `scenarios/issue_8270.py`: full source mirror for the canonical scenario-file
+  contract, NOT the editor entry file. It is an added export artifact, not part
+  of the reporter topology. Use `tests/pytest_test.py` for all checks; do not
+  substitute the mirror, which has no adjacent conftest.py. No reference-count
+  or whole-workspace rename assertion is requested against this added mirror.
+- `requirements.txt`: public unpinned `pytest` dependency.
+- `.vscode/settings.json` and `pyrightconfig.json`: retained portable public
+  configuration, including `extraPaths: ["."]` and execution root `"."`.
+- `screenshots/screenshot-1.png` through `screenshot-5.png`: retained historical
+  reporter screenshots, NOT current verification results.
+
+Only public reporter code/configuration and these instructions are included.
+No local interpreter path, credentials, or internal product source is needed.
 
 ## Reproduction steps
-1. Use the attached workspace, retaining tests/pytest_test.py, tests/conftest.py, and the empty tests/__init__.py. Open the workspace root in VS Code with the Python and Pylance extensions enabled.
-2. Prepare a Python environment and install the public dependency with `python -m pip install -r requirements.txt`. Select that environment using Python: Select Interpreter. The recorded interpreter was Python 3.12.10; the installed pytest version was not recorded.
-3. Retain the supplied workspace settings, particularly python.analysis.enablePytestSupport=true, python.analysis.enablePytestExtra=true, and python.analysis.inlayHints.pytestParameters=true. Leave the fixture parameters unannotated and retain the original unfinished `capfdbinary.` expression.
-4. Hover failure: in tests/pytest_test.py, find test_fixture_hover and hover over `close` in `capfdbinary.close` at line 37. Inspect the method signature and documentation in the tooltip. The recorded observation window was 15 seconds.
-5. Signature-help failure: find test_fixture_signatureHelp, place the cursor between the parentheses in `pytester.genitems()` at line 42, and invoke Trigger Parameter Hints. Inspect whether a signature-help popup appears. The recorded observation window was 15 seconds.
-6. Definition failure: find test_fixture_gotodef, place the cursor on `clear` in `doctest_namespace.clear()` at line 46, and invoke Go to Definition. Inspect the notification and whether a definition target opens. The recorded observation window was 15 seconds.
-7. Annotation failure: find test_fixture_codeAction, place the cursor on its `pytester` parameter at line 50, and invoke Quick Fix. Select the offered action `Add type annotations for all fixture references in this file`.
-8. Inspect the resulting imports and both test_fixture_codeAction(pytester) and test_fixture_signatureHelp(pytester). Compare these parameters with the other fixtures annotated by the same action. The recorded Quick Fix menu observation budget was 30 seconds.
-9. Undo the annotation action to restore the original imports and unannotated functions. This restoration was also performed in the saved check.
 
-Saved entry file: `tests/pytest_test.py`.
-
-## Expected behavior
-Hovering over `capfdbinary.close` provides the CaptureFixture.close method signature and documentation, rather than an Unknown member type.
-Trigger Parameter Hints inside `pytester.genitems()` displays signature help.
-Go to Definition on `doctest_namespace.clear()` opens a usable definition target for clear.
-The file-wide fixture annotation action annotates the pytester parameters in both functions and adds the corresponding Pytester import.
-
-## Actual behavior
-The close tooltip displayed only `(function) close: Unknown`, without the expected method signature or documentation. The screenshot also showed a CaptureFixture[bytes] parameter inlay hint. The saved accessibility snapshot independently recorded the Unknown tooltip.
-Trigger Parameter Hints completed at `pytester.genitems(|)`, but no signature-help popup appeared within 15 seconds. The saved screenshot and accessibility snapshot showed an unobstructed editor without a parameter-hints widget.
-Go to Definition displayed `No definition found for 'clear'` and remained in tests/pytest_test.py. No definition target opened within 15 seconds. The screenshot showed a dict[str, Any] inlay hint for doctest_namespace.
-The file-wide annotation action was offered and executed. It added imports for typing.Any and conftest.Fruit and annotated other fixtures, but both pytester parameters remained unannotated and no Pytester import was added. Undo restored the original file.
-
-## Environment
-- Target version: unknown (not recorded)
-- Public availability at report preparation: The exact target version was not recorded; Marketplace availability was not inferred.
-- Observed Pylance version: 2026.3.105
-- Build availability: unknown (not recorded)
-- VS Code version: unknown (not recorded)
-- Python version: 3.12.10
-- Operating system: Windows
+1. Open THIS workspace root in VS Code with Python and Pylance enabled. Use a
+   headless workbench of at least 1920x1080 for automation; measure the actual
+   workbench dimensions before UI checks.
+2. Prepare/select a Python environment, preferably Python 3.12.10 as recorded.
+   Install `python -m pip install -r requirements.txt` using that interpreter.
+   Record its exact executable/version and the installed pytest version. Probe
+   `import pytest` using that same interpreter and confirm its live selection
+   in VS Code. No pytest version was recorded by the reporter.
+3. Keep the supplied settings, especially `python.analysis.enablePytestSupport`,
+   `python.analysis.enablePytestExtra`, and
+   `python.analysis.inlayHints.pytestParameters`, all true. Wait for language
+   analysis to settle. Do not add annotations, repair syntax, activate pytester,
+   or invent format/save actions before the original-setup checks.
+4. Open `tests/pytest_test.py`. Leave `test_fixture_completion`'s unfinished
+   `capfdbinary.` expression at line 33 unchanged.
+5. **Member hover:** hover `close` in `test_fixture_hover` at line 37. Inspect
+   the full visible tooltip and documentation for up to 15 seconds. Expected:
+   usable CaptureFixture.close signature/documentation. Record the exact text;
+   distinguish a real annotation from the CaptureFixture[bytes] inlay hint.
+6. **Signature help:** place the cursor between the parentheses of
+   `pytester.genitems()` in `test_fixture_signatureHelp` at line 42. Explicitly
+   invoke **Trigger Parameter Hints** (Ctrl+Shift+Space); do not merely hover or
+   wait for auto-trigger. Observe for 15 seconds. Record popup presence and full
+   text, and any pytester fixture-availability limitation separately.
+7. **Go to Definition:** place the cursor on `clear` in
+   `test_fixture_gotodef` at line 46 and explicitly invoke **Go to Definition**
+   (F12). Observe for 15 seconds. Record the destination or exact notification;
+   do not infer success from the doctest_namespace type/inlay hint alone.
+8. **File-wide fixture annotation:** return to `tests/pytest_test.py`, put the
+   cursor on `pytester` in `test_fixture_codeAction` at line 50, and invoke
+   **Quick Fix** (Ctrl+.). Allow up to 30 seconds for the menu. Select
+   **Add type annotations for all fixture references in this file**. Inspect
+   the applied source edits/imports, specifically BOTH pytester parameters in
+   `test_fixture_signatureHelp` and `test_fixture_codeAction`, and whether a
+   Pytester import appears. Record changes to other fixtures as controls.
+   An offered menu item alone is not successful annotation.
+9. Undo the annotation action and confirm original source/imports are restored.
+   Record whether a save/reload was actually used; neither is an established
+   missing reporter prerequisite.
+10. Optional follow-up ONLY AFTER recording the original setup: explicitly
+    activate pytester using a standard pytest plugin declaration and repeat
+    the two pytester checks. Record the exact declaration, interpreter/plugin
+    availability, and results as a **changed-setup variant**, not as evidence
+    that pytester was activated in the report. Restore the original conftest.py.
 
 ## Evidence and limitations
-This report uses saved test results and a public copy of the retained repro. Verification was not rerun. Any privacy or portability changes to the public copy are listed below.
 
-These are recorded failed editor checks, not confirmed product defects. Root cause and attribution were not established.
-The supplied conftest.py defines user fixtures but contains no pytester plugin declaration. The public copy preserves this setup; no plugin or replacement provider was added. This fixture-availability limitation applies to the pytester signature-help and annotation observations.
-The source intentionally contains the unfinished `capfdbinary.` expression and other editor scenarios. It is an editor reproduction, not a runnable pytest suite. The unfinished expression was retained rather than repaired.
-The installed pytest version was not recorded. requirements.txt remains unpinned, so a new installation may differ from the recorded environment.
-Pylance 2026.3.105 is the observed build. The exact target version was not recorded, and Marketplace availability was not established. No publicly available release of that build is asserted.
-The hover observation initially matched two hover elements, one hidden. The saved screenshot and read-only accessibility snapshot resolved that selector ambiguity without repeating the hover action.
-The definition failure included an explicit no-definition message; it was not merely a mismatch against a particular expected destination.
-The annotation action changed other recognized fixtures before Undo. The reported failure is specifically its omission of the pytester annotations and import.
-For portability, the named-workspace extraPaths value was replaced with a relative workspace path. pyrightconfig.json now uses the supplied workspace root instead of an absent src directory and is valid JSON. Unrelated dependencies were removed; pytest and all supplied supporting Python files were retained.
-The public copy was prepared from saved evidence only. No tests or editor actions were rerun, and the portability adjustments have not been freshly verified.
-Local-only or unrelated editor settings were omitted from the portable copy.
-.vscode/settings.json was adjusted for public sharing; the original saved file was not changed or rerun.
-pyrightconfig.json was adjusted for public sharing; the original saved file was not changed or rerun.
-requirements.txt was adjusted for public sharing; the original saved file was not changed or rerun.
+### Historical observations (not rerun here)
+
+The issue body and public README record these tested triggers and results:
+
+| Trigger in `tests/pytest_test.py` | Historical reported result | Retained image |
+| --- | --- | --- |
+| Hover `capfdbinary.close` | `(function) close: Unknown`, despite parameter inlay hint | `screenshots/screenshot-1.png` |
+| Explicit parameter hints inside `pytester.genitems()` | No popup in 15 seconds | `screenshots/screenshot-2.png` |
+| Go to Definition on `doctest_namespace.clear()` | `No definition found for 'clear'` | `screenshots/screenshot-3.png` |
+| Apply file-wide annotation from the pytester parameter | Action offered; other fixtures annotated, both pytester parameters/import skipped | `screenshots/screenshot-4.png`, `screenshots/screenshot-5.png` |
+
+The current preparation inspected these five images, read the live issue and
+retained public source/configuration, and materialized the workspace. It did
+NOT rerun hover, parameter hints, definition, or annotation in VS Code.
+All four fresh editor observations remain pending the next verifier.
+No current `reproduced`, `not_reproduced`, or `fixed` finding is asserted.
+Static validation matched all six retained source/configuration files to the
+pinned public artifact above (normalizing line endings and terminal newlines),
+matched all five screenshots byte-for-byte, checked the exact trigger lines,
+and confirmed the empty package marker and unchanged optional-plugin setup.
+The canonical scenario mirror was checked byte-for-byte against the entry file.
+
+- Reported host: Windows, Python 3.12.10, observed Pylance 2026.3.105. Exact
+  target build, VS Code version, pytest version, and public availability of
+  that observed Pylance build were not recorded. Do not silently claim an
+  exact historical environment or identify a development version by name alone.
+- The optional pytester plugin is NOT activated in the supplied files.
+  Missing pytester help/annotations may reflect fixture unavailability.
+  This does not invalidate the other concrete fixture checks or justify
+  discarding the partial scenario.
+- The unfinished `capfdbinary.` is intentional reporter input. Running pytest
+  collection would encounter syntax errors and is not an editor verdict.
+  Do not remove it without preserving and first testing the unchanged case.
+- Screenshot type labels are inlay hints; the authoritative source parameters
+  are unannotated. Do not transcribe those visual hints into annotations.
+- The original saved accessibility snapshots mentioned by the report were not
+  recovered here; image/body descriptions are historical evidence only.
+- The public copy already changed a named-workspace extraPaths value to `"."`,
+  made pyrightconfig.json valid with root `"."`, removed unrelated dependencies,
+  and omitted local-only editor settings. Those portability changes were not
+  freshly verified. Unknown original settings are not silently reconstructed.
+- A fixed-in-next-version label or related merged change is context, not
+  empirical confirmation for any of the four fresh checks.
+- Later verification must record actual product/build provenance and the
+  resulting editor behavior. Keep fresh screenshots/results outside this
+  public workspace, under the investigation evidence directory.
+- This is a useful partial editor repro even if exact historical package/build
+  matching is unavailable. Report limitations per check rather than skipping
+  the entire issue, and do not auto-close based on this preparation.
