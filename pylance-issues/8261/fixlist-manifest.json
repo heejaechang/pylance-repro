@@ -1,0 +1,52 @@
+{
+  "release": "pre-release",
+  "workspace": ".",
+  "venvPath": ".venv",
+  "settings": {
+    "python.analysis.fixAll": ["addTypeAnnotation"],
+    "python.analysis.inlayHints.variableTypes": true,
+    "editor.inlayHints.enabled": "on"
+  },
+  "issues": [
+    {
+      "issueNumber": 8261,
+      "issueUrl": "https://github.com/microsoft/pylance-release/issues/8261",
+      "reproFile": "with_item_annotations_8189.py",
+      "supportingPaths": [".vscode/settings.json", "scenarios/issue_8261.py", "input.txt", "audit.txt"],
+      "bugDescription": "Read-only variable type inlay hint is absent for source_file in a with-item. Linked public step parity: open with_item_annotations_8189.py with variable hints enabled; inspect source_file in the first with while actual text remains as source_file,. No save/Fix All/annotation action belongs to this check.",
+      "checks": [
+        {
+          "description": "REPRO: first with-item source_file renders a read-only TextIOWrapper type hint",
+          "action": "inlayHint",
+          "anchor": "with open(\"input.txt\", encoding=\"utf-8\") as source_file, open(\"output.txt\", \"w\", encoding=\"utf-8\") as destination_file:",
+          "target": "source_file",
+          "verifyVia": "screenshotOnly",
+          "confidenceRequirement": "visual-only"
+        },
+        {
+          "description": "GEN: ordinary assignment line_count renders its inferred int type hint as a control",
+          "action": "inlayHint",
+          "anchor": "line_count = get_value()",
+          "target": "line_count",
+          "verifyVia": "screenshotOnly",
+          "confidenceRequirement": "visual-only"
+        },
+        {
+          "description": "GEN: inspecting hints leaves actual with-target syntax unannotated",
+          "action": "custom",
+          "anchor": "destination_file.write(source_file.read())",
+          "target": "source_file",
+          "verifyVia": "editorText",
+          "confidenceRequirement": "deterministic",
+          "expectedContains": [
+            "as source_file, open(\"output.txt\", \"w\", encoding=\"utf-8\") as destination_file:"
+          ],
+          "expectedNotContains": [
+            "as source_file: TextIOWrapper,",
+            "as destination_file: TextIOWrapper:"
+          ]
+        }
+      ]
+    }
+  ]
+}
