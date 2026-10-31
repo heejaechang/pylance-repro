@@ -1,0 +1,1 @@
+"""Synthetic batch package."""

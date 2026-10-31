@@ -1,0 +1,7 @@
+"""Original synthetic input for a workspace traversal/shutdown check."""
+
+MODULE_NAME = 'group_0072.module_0038'
+OFFSET = 72038
+
+def make_record(value: int) -> dict[str, int | str]:
+    return {'name': MODULE_NAME, 'value': value + OFFSET}

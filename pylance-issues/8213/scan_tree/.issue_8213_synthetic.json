@@ -1,0 +1,8 @@
+{
+  "issueUrl": "https://github.com/microsoft/pylance-release/issues/8213",
+  "synthetic": true,
+  "groups": 512,
+  "modulesPerGroup": 128,
+  "moduleCount": 65536,
+  "batchCount": 4096
+}
