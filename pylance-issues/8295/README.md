@@ -1,125 +1,118 @@
-# Pylance + Pyrefly semantic-token failures in PEP 723 scripts
+# Pylance + Pyrefly: semantic-token failures in PEP 723 scripts
 
 Original issue: https://github.com/microsoft/pylance-release/issues/8295
 
-Reporter-mentioned related issue:
-https://github.com/microsoft/pylance-release/issues/8293.
-The reporter has not confirmed a common cause.
+Related issue: https://github.com/microsoft/pylance-release/issues/8293
+(a common cause has not been established).
+Linked implementation work:
+https://github.com/microsoft/pyrx/pull/10069 and
+https://github.com/microsoft/pyrx/pull/10077.
+These references and the fix label do not verify the reporter's scenario.
 
-Labels observed during investigation: `bug`, `tsp-pyrefly`, and
-`fixed in next version (main)`.
+Labels in the saved November 18 issue: `bug`, `tsp-pyrefly`,
+`fixed in next version (main)`, `repro workspace`.
 
-## Reported behavior
+## Reporter context
 
 The reporter uses browser-based VS Code in Ona on Ubuntu 24.04.5, Pylance
-2026.4.1, Pyrefly 1.4.1, CPython 3.11.18, a uv-managed interpreter, a PEP 723
-script, and an editable local package.
+2026.4.1, Pyrefly 1.4.1, CPython 3.11.18, uv-managed PEP 723 scripts, and an
+editable local package. Imported symbols lose semantic coloring with
+`python.analysis.diagnosticsSource = "Pylance + Pyrefly"`. Basic syntax colors
+remain. The abbreviated logs show `textDocument/semanticTokens/full` errors
+with code `-32603`, reading undefined `typeParams` or `parameters`. Switching
+to `Pylance` and reloading with the same interpreter restores coloring.
+Ordinary project files retain coloring. Disabling uv-auto-venv and manually
+selecting the interpreter did not resolve the problem.
 
-With `python.analysis.diagnosticsSource` set to `Pylance + Pyrefly`, imported
-symbols lose semantic coloring. Pylance logs show failed
-`textDocument/semanticTokens/full` requests with `-32603` and exceptions reading
-undefined `typeParams` or `parameters`. Selecting `Pylance` with the same
-interpreter restores coloring. Ordinary project files retain coloring with
-Pyrefly.
+No original source, exact inline metadata, editable-package contents, uv
+commands, complete settings, VS Code/Ona version, or full failing trace were
+supplied. This is a **concrete partial investigation fixture**, not reporter
+code, a proven reduction, or a faithful reproduction of the full scenario.
 
-The issue contains no affected source, package layout, full trace, screenshot,
-or attachment. This workspace is therefore a concrete partial reproduction,
-not a transcription of reporter code.
+## Files and dependency contract
 
-## Workspace contents
+- `scenarios/issue_8295.py`: synthetic PEP 723 script with imported functions,
+  a generic class, enum, and bound `TypedDict.get`.
+- `scenarios/regular_project_control.py`: same executable imports and expressions
+  without inline metadata.
+- `editable-package/`: synthetic local dependency; aliased overloads and generic
+  shapes are investigation probes, not recovered reporter types.
+- `requirements.txt`: editable package and reporter-mentioned Pyrefly 1.4.1.
+- `.vscode/settings.json`: safe initial Pylance source and compact tracing.
+- `fixlist-manifest.json`, `verification-plan.md`, and `procedures/`: explicit
+  caller-owned checks and editor open/navigation inputs, not run results.
 
-- `scenarios/issue_8295.py` is the PEP 723 script under test.
-- `scenarios/regular_project_control.py` repeats the same imports and expressions
-  without PEP 723 metadata.
-- `editable-package/` is installed editable into the selected environment.
-- `editable-package/src/issue8295_editable/types.py` contains synthetic
-  imported-symbol probes: aliased overloads, a generic
-  function/class, an enum member, and a `TypedDict.get` value.
-- `requirements.txt` pins Pyrefly 1.4.1 and declares the editable package.
-- `fixlist-manifest.json` records the reusable environment and visual checks.
-- `verification-plan.md` records the pending real-editor and log checks.
-- `procedures/pep723.json` and `procedures/ordinary-control.json` declare
-  editor-originated open/navigation steps; neither invokes a provider directly.
-
-These probes are not the reporter's code or a proven reduction of the failure.
-They retain useful imported function/class shapes without any product source.
-In particular, `dependencies = []` in the script and the separately installed
-editable dependency are fixture choices, not recovered reporter metadata.
-This workspace does not reconstruct a uv per-script cache environment or prove
-that inline metadata causes the issue.
+The intended reusable environment is `.venv`; dependency source is
+`requirements.txt`. Verify its interpreter and dependencies before reuse.
 
 ## Reproduction steps
 
-1. Reuse an existing compatible `.venv` when available. For a fresh public
-   checkout only, prepare it with CPython 3.11 and install `requirements.txt`
-   from this workspace root using uv or the issue-workspace setup flow.
-   Record the actual version if exact CPython 3.11.18 is unavailable.
-2. Verify both commands with the selected environment:
-   - `<venv-python> -c "import issue8295_editable; print(issue8295_editable.__file__)"`
-   - `<venv-pyrefly> --version` must report Pyrefly 1.4.1.
-3. Open this directory in a fresh VS Code session at a workbench size of at
-   least 1920x1080. Select the exact `.venv` interpreter and verify the status
-   bar selection.
-4. Set `python.analysis.pyreflyVersion` to the absolute path of the verified
-   `.venv` Pyrefly executable. Then set
-   `python.analysis.diagnosticsSource` to `Pylance + Pyrefly` and reload.
-5. Establish that Pyrefly started and served the workspace through the Type
-   Server Protocol. The setting alone is not readiness evidence.
-6. Open `scenarios/issue_8295.py`. Trigger normal editor semantic-token
-   requests and inspect the imported names `Box`, `Domain`, `convert`,
-   `identity`, and `metadata_get`. `procedures/pep723.json` supplies the
-   open/navigation steps after setup and reload.
-7. Confirm that `textDocument/semanticTokens/full` completes and semantic
-   coloring remains visible. Capture any `-32603` error or stack mentioning
-   `typeParams`, `parameters`, `getName`, or `findIndex`.
-8. Open `scenarios/regular_project_control.py`, using
-   `procedures/ordinary-control.json`, and repeat the same checks as the
-   reporter's ordinary-project-file control.
-9. Change only `python.analysis.diagnosticsSource` to `Pylance`, reload, keep
-   the same interpreter, and repeat the PEP 723 script check as the reporter's
-   same-interpreter control.
+1. Prepare or reuse an issue-local CPython 3.11 environment for this partial
+   fixture. Prefer reporter version 3.11.18 if available. Install
+   `requirements.txt` from this workspace root using the approved package feed
+   in the actual extension host. Record commands, versions, interpreter and
+   Pyrefly executable. This is fixture setup, not the unknown reporter uv flow.
+2. With the exact interpreter, verify `import issue8295_editable` resolves to
+   `editable-package/src/`, its installation is editable, and the selected
+   Pyrefly executable reports version 1.4.1.
+3. Open this workspace in the caller's VS Code session, with compact server
+   tracing and native trace logging. Verify actual workbench dimensions of at
+   least 1920x1080 and record the loaded Pylance build. Select and verify the
+   exact interpreter in the live editor.
+4. Set `python.analysis.pyreflyVersion` to the verified absolute executable path,
+   then set `python.analysis.diagnosticsSource` to `Pylance + Pyrefly` and reload.
+   Establish actual external-server/TSP readiness, not just setting readback.
+5. Establish an incremental editor-LSP trace baseline, then open
+   `scenarios/issue_8295.py` through `procedures/pep723.json`. The tested trigger
+   is opening/focusing the script after the backend switch and reload.
+6. Observe editor-originated semantic-token full/range/delta requests for that
+   URI and inspect rendered coloring of `Box`, `Domain`, `convert`, `identity`
+   and `metadata_get`. Retain request IDs, errors/stacks and screenshots.
+   Do not substitute syntax coloring or a direct provider call.
+7. With the same interpreter and backend, open
+   `scenarios/regular_project_control.py` through
+   `procedures/ordinary-control.json`; repeat the token and rendered checks.
+8. Change only diagnostics source to `Pylance`, reload, verify the interpreter
+   is unchanged, and repeat `scenarios/issue_8295.py`.
 
 ## Evidence and limitations
 
-- Existing Windows desktop observations from 2026-11-17 used Pylance
-  2026.4.101, CPython 3.11.15 and Pyrefly 1.4.1 at 1920x1080.
-  `scenarios/issue_8295.py` and `scenarios/regular_project_control.py` both
-  received successful semantic-token full responses with Pyrefly, and the
-  same-interpreter Pylance script control also succeeded. Saved screenshots
-  show retained imported-name coloring.
-- A separate editor hover on `convert` failed with undefined `parameters`
-  under Pyrefly in both files, while the Pylance hover succeeded. This is not
-  the reported semantic-token crash, and it does not establish a shared root
-  cause or a PEP-723-specific trigger.
-- Current issue-level verdict: **unknown**. These are historical partial
-  observations; the caller owns the next real-editor check. No local fix was
-  applied or accepted.
-- The exact PEP 723 metadata, package contents, uv command, interpreter path,
-  Ona/VS Code version, and full failing trace are unavailable. The metadata and
-  local package here preserve the reported topology but cannot prove equivalence
-  to the missing source.
-- The host is not Ona on Ubuntu. A Windows desktop run is useful supporting
-  evidence but cannot establish browser-host or Linux fidelity.
-- `.vscode/settings.json` seeds a safe Pylance starting state and compact
-  tracing for verification, not the reporter's complete settings. Interpreter
-  selection and the verified absolute Pyrefly executable path must be applied
-  by the runner in its own host namespace before enabling Pyrefly. No theme,
-  semantic-highlighting override, search path, or unknown reporter setting is
-  invented here.
-- Do not infer semantic coloring from an LSP success alone. Retain both the
-  semantic-token request result and rendered editor evidence.
-- A pass on this workspace does not justify closing the issue. It shows only
-  that the current build handles this issue-grounded partial topology.
-- A remaining crash is actionable. Preserve the complete request stack and, if
-  possible, the Type Server Protocol payload or reconstructed type immediately
-  before the failing consumer.
+- **Issue-wide result: inconclusive.** A November 18 Windows desktop check of
+  this partial fixture used Pylance 2026.4.101, Pyrefly 1.4.1 and CPython
+  3.11.15. Opening and focusing both scenario files produced successful
+  semantic-token full and delta responses and visible imported-name coloring.
+  The PEP 723 script also retained coloring with the same interpreter after
+  switching to Pylance. No reported token error was observed in those checks.
+  This does not establish behavior in the reporter's original environment.
+- Retained November 17 Windows receipts for this fixture report successful
+  semantic-token full requests in `scenarios/issue_8295.py` with Pyrefly and
+  Pylance, and in `scenarios/regular_project_control.py` with Pyrefly. That run
+  used Pylance 2026.4.101, Python 3.11.15 and Pyrefly 1.4.1, not the reporter's
+  complete environment. Separate hover errors in both files are not the
+  reported semantic-token failure and do not establish its cause.
+- A later historical attempt was blocked during Marketplace startup, before
+  product checks. That is not evidence that current setup will fail or that the
+  product symptom was reproduced.
+- `dependencies = []` and a separately installed editable package are explicit
+  fixture assumptions. They do **not** reconstruct the reporter's per-script
+  uv environment. Executing the script with automatic uv isolation is not a
+  substitute for the declared editor checks.
+- Browser/Ona hosting, Ubuntu, exact metadata/package types, interpreter
+  resolution, original uv commands and complete trace remain unconfirmed.
+  Windows desktop observations are lower-fidelity supporting evidence only.
+- No save action/settings, theme override, search path, or semantic-highlighting
+  override is invented. Settings here are test instrumentation, not a complete
+  reporter configuration. Apply machine-specific executable paths at runtime.
+- A pass on this partial fixture does **not** justify closure or establish
+  `not_reproduced` for the reporter. A matching failure needs its full trace
+  and producer evidence before assigning a root cause.
+- If partial checks pass, request a shareable affected script, exact PEP 723
+  metadata, editable package example, uv commands/interpreter path, VS Code/Ona
+  version and full failing Pylance trace.
 
 ## Public export boundary
 
-Export the fixture source, requirements, portable settings, manifest,
-procedures, README and verification plan only. Do not copy `.venv`,
-`__pycache__`, `*.egg-info`, machine-local setup metadata, native logs, or
-editor receipts into the public repro. `.gitignore` excludes runtime files,
-but a non-git exporter must honor these exclusions explicitly. Keep local
-evidence outside this workspace.
-
+This workspace contains only synthetic fixture code, portable settings and
+instructions. Keep environments, bytecode, egg metadata, setup receipts,
+screenshots and native logs outside public export. A non-git exporter must
+explicitly exclude runtime files even though `.gitignore` lists them.

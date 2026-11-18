@@ -1,128 +1,102 @@
-# Pending real-editor checks
+# Caller-owned current-behavior checks for issue 8295
 
-Use the workspace root containing this file. The caller owns execution.
+Issue: https://github.com/microsoft/pylance-release/issues/8295
 
-## Environment declaration
+This is repro/current-behavior mode, not local-fix acceptance. The investigation
+prepares only the partial fixture. The caller owns all environment preparation,
+VS Code lifecycle, backend readiness and UI observations.
 
-- `venvPath`: `.venv`
+## Environment metadata
+
+- `venvPath`: `.venv` (intended, currently not prepared)
 - `dependencySource`: `requirements.txt`
-- Requested Python: CPython 3.11, matching 3.11.18 when available
-- Requested Pyrefly: 1.4.1
-- Editable dependency: `./editable-package`
-- Product input: caller-selected current Pylance build, with its exact loaded
-  version and artifact identity recorded. This is a current-behavior check,
-  not paired baseline/fix acceptance.
-- Reported host: browser-based VS Code in Ona on Ubuntu 24.04.5
-- Available local-host result must be labeled lower-fidelity if it does not use
-  that host and operating system
+- Python: reporter CPython 3.11.18; record any substitution.
+- Pyrefly: reporter 1.4.1, pinned in requirements.
+- Local fixture: editable `./editable-package`.
+- Product: caller-selected current Pylance build; prefer latest prerelease when
+  no build is prescribed and record exact loaded version/artifact.
+- Reporter host: browser VS Code in Ona / Ubuntu 24.04.5. Local Windows checks
+  remain partial; no claim that host differences are causal.
+- Historical environment: Windows CPython 3.11.15 / Pyrefly 1.4.1. It is not
+  present at the canonical workspace now; historical paths are not readiness.
 
-## Preconditions
+Reuse a declared compatible environment or valid issue-workspace setup receipt
+if the caller has one. Otherwise use the controller's issue-monitor setup
+contract, preserving its original source interpreter, `--issue-number 8295`,
+the canonical workspace and exact supplied `EVIDENCE_ROOT`. No receipt or
+environment was created by this investigation. Install dependencies through
+the approved feed, verify the editable import and Pyrefly executable, and retain
+any setup failure separately from the product result.
 
-1. Reuse the declared environment if present; do not reinstall or recreate a
-   working environment. A Windows environment cannot serve a Linux host.
-2. Verify the editable import and Pyrefly executable with the exact interpreter.
-3. Start a fresh VS Code session at 1920x1080 or larger and record
-   `window.innerWidth` and `window.innerHeight`.
-4. Select and verify the declared interpreter.
-5. Set `python.analysis.pyreflyVersion` to the verified absolute executable path,
-   then set `python.analysis.diagnosticsSource` to `Pylance + Pyrefly`.
-6. Reload and establish external Type Server Protocol readiness.
-7. Start incremental LSP observation before opening the scenario.
+## Preconditions and lifecycle (not procedure steps)
 
-The existing local environment was rechecked on 2026-11-18: CPython 3.11.15,
-Pyrefly 1.4.1, and an editable import resolving inside `editable-package/src/`.
-No new environment was prepared. Portable settings intentionally omit the
-previous runner's absolute interpreter and Pyrefly paths; apply them explicitly
-in the next live session. No setup-helper receipt is bundled here.
+1. Use a fresh caller-owned headless session unless otherwise requested. Set
+   `python.trace.server: "compact"` before launch and native `logLevel: "trace"`.
+   Record loaded extension identity; do not silently substitute another build.
+2. Verify `window.innerWidth >= 1920` and `window.innerHeight >= 1080` before
+   UI checks. Save dimensions in the exact caller evidence directory.
+3. Select the intended exact interpreter and verify the status-bar selection.
+   With that interpreter, verify package origin and editable installation.
+4. Verify the actual Pyrefly executable/version, write its absolute path to
+   `python.analysis.pyreflyVersion`, then enable `Pylance + Pyrefly` at workspace
+   scope and reload.
+5. Retain `getDiagnosticsBackendState` for the exact workspace-folder URI.
+   Its explicit inconclusive state is not external-server readiness. Correlate
+   native initialization and a served TSP operation with this owned session.
+6. Call `observeEditorLsp` before editor actions to establish an owned-session
+   baseline. Do not mix direct provider calls or a hover into the acceptance
+   sequence. Perform any separate readiness probe before this baseline.
 
 ## editorRunProcedure
 
-After the preconditions, use the shared `editorRunProcedure` action with the
-owning live `sessionId`, the exact absolute `params.workspacePath`, and
-`params.procedurePath` pointing to `procedures/pep723.json` under this workspace.
-Use `procedures/ordinary-control.json` for the ordinary-file check. Reuse
-`procedures/pep723.json` after the source-only Pylance switch and awaited reload.
-Both procedure files are persisted, schema-version-1 JSON with source hashes.
+Prepared schema-version-1 JSON inputs:
 
-Choose a fresh `params.resultPath` under the controller evidence root for each
-invocation and set `includeServiceTimings: true`. These files are procedure
-inputs, not execution receipts or verdicts. Setup, reload, backend readiness,
-rendered observation, screenshots and incremental LSP collection remain
-separate caller-owned actions; the procedures do not assert success.
+- `procedures/pep723.json`: open/focus `scenarios/issue_8295.py`.
+- `procedures/ordinary-control.json`: open/focus the ordinary-file control.
 
-Use compact tracing plus native trace logging. Call `observeEditorLsp` before
-editor actions to establish an owned-session baseline, then after each check
-with a fresh result path. Retain all receipts because observation advances the
-cursor. Distinguish full, range and delta requests by method, ID and scenario
-URI. Keep unresolved records pending; missing records do not prove success or
-absence of a request. For hosts unsupported by this observer, retain native
-host logs rather than treating missing local logs as a product result.
+Use the shared `editorRunProcedure` action with the owning live `sessionId`,
+exact absolute `params.workspacePath`, and absolute `params.procedurePath`
+under this workspace. Set `includeServiceTimings: true` and a fresh
+`params.resultPath` under the exact supplied evidence directory for each call.
+Input hashes guard saved scenario bytes. Successful procedure completion proves
+actions only, not a semantic-coloring verdict.
 
-After each source change, retain `getDiagnosticsBackendState` for the exact
-workspace-folder URI, but do not treat its explicitly inconclusive backend
-state as readiness. Correlate actual external-server initialization/operation
-with the scenario. Verify the selected interpreter in the live status bar.
-Record actual renderer dimensions of at least 1920x1080 before UI checks.
+Lifecycle, source switches, reloads, readiness, screenshots and incremental LSP
+observations remain separate caller actions. Do not write an empirical
+acceptance record for these unexecuted inputs.
 
-## Checks
+## Checks and observations
 
-### Pyrefly PEP 723 check
+1. **REPRO / Pyrefly script:** run `procedures/pep723.json`; capture actual
+   editor-originated semantic-token full/range/delta responses for
+   `scenarios/issue_8295.py`, with request ID, URI, duration, error and full
+   stack. Check imported-name coloring in the rendered editor. Expected:
+   semantic highlighting, no `-32603` token error. Actual: pending.
+2. **GEN / ordinary-file control:** run `procedures/ordinary-control.json`
+   without changing the environment/backend. Repeat token and rendered checks.
+   This is a file outside PEP 723, not an inline-metadata causality proof.
+   Actual: pending.
+3. **GEN / Pylance control:** change only diagnostics source to `Pylance`,
+   reload, verify the exact same interpreter, and rerun `procedures/pep723.json`.
+   Repeat the same token and rendered checks. Actual: pending.
 
-Open `scenarios/issue_8295.py`.
+Retain a fresh `observeEditorLsp` result after each check; observations consume
+a cursor. Preserve pending records and follow up without replaying mutations.
+Missing trace events do not prove absence/success. Remote transports need
+native host logs where the local observer is unsupported. Inspect request
+methods: a hover failure is not a semantic-token failure. The reported stack
+mentions `typeParams`/`parameters`; preserve any complete stack before tracing
+type producers. Syntax colors alone are not semantic-coloring evidence.
 
-- Confirm a `textDocument/semanticTokens/full` request is issued for this URI.
-- Confirm the request completes without `-32603`.
-- Inspect rendered tokens for imported `Box`, `Domain`, `convert`, `identity`,
-  and `metadata_get`; retain a screenshot or Inspect Editor Tokens evidence.
-- Retain the post-action incremental LSP observation and Pylance trace.
-- Search the trace for `typeParams`, `parameters`, `getName`, and `findIndex`.
-- Judge imported-symbol coloring, not the continued presence of syntax colors.
-- Do not add a hover call to this target sequence. If checking the previously
-  observed hover anomaly, do it afterward in a separately labeled observation.
+After capture, restore the original workspace source and stop only the
+caller's owned session. Never use historical session IDs as cleanup authority.
 
-### Pyrefly ordinary-file control
+## Fidelity and disposition
 
-Open `scenarios/regular_project_control.py` without changing the interpreter or
-Pyrefly settings.
-
-- Repeat the semantic-token request and rendered-color checks.
-- Record whether behavior differs from the PEP 723 script.
-
-### Same-interpreter Pylance control
-
-Change only `python.analysis.diagnosticsSource` to `Pylance`, reload, and reopen
-`scenarios/issue_8295.py`.
-
-- Verify the selected interpreter did not change.
-- Repeat the semantic-token request and rendered-color checks.
-
-## Existing observations, not a new verdict
-
-The 2026-11-17 Windows run used Pylance 2026.4.101, CPython 3.11.15 and
-Pyrefly 1.4.1. Semantic-token full requests succeeded for the Pyrefly script
-(request 11, 1719 ms), Pyrefly ordinary control (29, 184 ms), and Pylance
-script control (9, 955 ms). Saved editor screenshots retain coloring.
-Separate Pyrefly hover requests 20 and 33 failed with undefined `parameters`
-in both files; Pylance hover 14 succeeded. No corresponding semantic-token
-failure or producer diagnosis was established.
-
-The new procedures deliberately omit hover and do not replace or reinterpret
-those original receipts. No new editor session has been launched by this
-investigation.
-
-## Interpretation
-
-- A Pyrefly-only crash after readiness reproduces the product symptom on this
-  partial topology. Preserve the full stack and external type payload before
-  attributing a producer.
-- Success for all checks is supporting evidence only. The reporter's exact
-  script, package, uv topology, Ona host, and Ubuntu environment remain missing,
-  so it is not an unable-to-reproduce or closure result.
-- If only real-editor execution can decide the checks, the investigation
-  execution verdict remains `unknown` until the caller completes them.
-- Ask for the affected script plus a shareable editable-package example,
-  exact uv setup/interpreter resolution and full trace if the partial fixture
-  still passes. The absence of that material does not make the partial
-  workspace ineligible.
-- Stop only the caller's owned session after saving evidence; do not adopt or
-  terminate a historical session based on its ID in old notes.
+The script has empty PEP 723 dependencies and uses a separately installed
+synthetic editable package. Exact reporter source, per-script uv environment,
+settings and host remain missing. No unknown save setting or action is assumed.
+If these partial checks pass, preserve the observations but keep issue-wide
+behavior unresolved and request the missing reporter materials. Do not close
+the issue on that basis. A matching failure is actionable symptom evidence;
+producer RCA still needs a linked failing boundary payload and runtime proof.
