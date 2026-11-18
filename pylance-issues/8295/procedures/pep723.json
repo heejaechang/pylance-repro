@@ -1,0 +1,25 @@
+{
+    "schemaVersion": 1,
+    "sourceHashes": {
+        "scenarios/issue_8295.py": "a54340529abe5370e111934268a2d0e52107f9df9eff61a04ae9d7b7e3716576"
+    },
+    "steps": [
+        {
+            "action": "openFile",
+            "params": {
+                "fileName": "scenarios/issue_8295.py"
+            },
+            "expect": {
+                "opened": true
+            }
+        },
+        {
+            "action": "navigateToTarget",
+            "params": {
+                "fileName": "scenarios/issue_8295.py",
+                "anchor": "converted_number = convert(1)",
+                "anchorOffset": 21
+            }
+        }
+    ]
+}

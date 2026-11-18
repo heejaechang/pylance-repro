@@ -1,0 +1,2 @@
+-e ./editable-package
+pyrefly==1.4.1

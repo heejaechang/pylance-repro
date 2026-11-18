@@ -1,0 +1,101 @@
+{
+    "release": "caller-selected current build; record exact loaded version",
+    "workspace": ".",
+    "venvPath": ".venv",
+    "dependencySource": "requirements.txt",
+    "settings": {
+        "python.analysis.diagnosticsSource": "Pylance",
+        "python.trace.server": "compact"
+    },
+    "issues": [
+        {
+            "issueNumber": 8295,
+            "issueUrl": "https://github.com/microsoft/pylance-release/issues/8295",
+            "reproFile": "scenarios/issue_8295.py",
+            "bugDescription": "Reporter observes lost imported-symbol semantic coloring and failed semantic-token requests in uv PEP 723 scripts with an editable package and Pyrefly. This synthetic partial workspace does not establish the cause.",
+            "supportingPaths": [
+                ".vscode/settings.json",
+                "README.md",
+                "verification-plan.md",
+                "requirements.txt",
+                "procedures/pep723.json",
+                "procedures/ordinary-control.json",
+                "editable-package",
+                "scenarios/regular_project_control.py"
+            ],
+            "checks": [
+                {
+                    "description": "REPRO: imported symbols in the PEP 723 script retain semantic coloring with Pylance + Pyrefly",
+                    "action": "custom",
+                    "anchor": "# SEMANTIC-TOKEN CHECK: imported symbols must retain semantic coloring.",
+                    "target": "convert",
+                    "verifyVia": "screenshotOnly",
+                    "confidenceRequirement": "visual-only",
+                    "steps": [
+                        {
+                            "type": "recipe",
+                            "name": "configure-pyrefly-tsp",
+                            "notes": "Reuse the declared environment. Verify the exact interpreter and Pyrefly 1.4.1 executable, select that interpreter, set the verified absolute Pyrefly path before enabling Pylance + Pyrefly, reload, and establish actual TSP readiness. Follow verification-plan.md for both editor-originated semantic-token traces and rendered coloring."
+                        },
+                        {
+                            "type": "action",
+                            "action": "openFile",
+                            "params": {
+                                "fileName": "scenarios/issue_8295.py"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "description": "GEN: ordinary project-file control retains semantic coloring with the same Pyrefly environment",
+                    "action": "custom",
+                    "anchor": "# SEMANTIC-TOKEN CHECK: imported symbols must retain semantic coloring.",
+                    "target": "convert",
+                    "verifyVia": "screenshotOnly",
+                    "confidenceRequirement": "visual-only",
+                    "steps": [
+                        {
+                            "type": "action",
+                            "action": "openFile",
+                            "params": {
+                                "fileName": "scenarios/regular_project_control.py"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "description": "GEN: same-interpreter Pylance control retains semantic coloring in the PEP 723 script",
+                    "action": "custom",
+                    "anchor": "# SEMANTIC-TOKEN CHECK: imported symbols must retain semantic coloring.",
+                    "target": "convert",
+                    "verifyVia": "screenshotOnly",
+                    "confidenceRequirement": "visual-only",
+                    "steps": [
+                        {
+                            "type": "action",
+                            "action": "settingsAddWorkspaceSetting",
+                            "params": {
+                                "setting": "python.analysis.diagnosticsSource",
+                                "value": "Pylance"
+                            }
+                        },
+                        {
+                            "type": "action",
+                            "action": "commandRun",
+                            "params": {
+                                "command": "workbench.action.reloadWindow"
+                            }
+                        },
+                        {
+                            "type": "action",
+                            "action": "openFile",
+                            "params": {
+                                "fileName": "scenarios/issue_8295.py"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

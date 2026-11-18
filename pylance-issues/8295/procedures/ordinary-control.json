@@ -1,0 +1,25 @@
+{
+    "schemaVersion": 1,
+    "sourceHashes": {
+        "scenarios/regular_project_control.py": "819e0c1c5e632836f28756bfec40d731e87e6db1c9a91e4af856aed8e4f3ef11"
+    },
+    "steps": [
+        {
+            "action": "openFile",
+            "params": {
+                "fileName": "scenarios/regular_project_control.py"
+            },
+            "expect": {
+                "opened": true
+            }
+        },
+        {
+            "action": "navigateToTarget",
+            "params": {
+                "fileName": "scenarios/regular_project_control.py",
+                "anchor": "converted_number = convert(1)",
+                "anchorOffset": 21
+            }
+        }
+    ]
+}
